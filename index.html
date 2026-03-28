@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CODM Sensi Generator - Pro Edition</title>
+    <style>
+        :root { --primary: #f39c12; --bg: #0a0a0a; --card: #161616; --low: #3498db; --high: #e74c3c; }
+        
+        body {
+            font-family: 'Impact', 'Arial Black', sans-serif;
+            background-color: var(--bg);
+            color: #fff;
+            margin: 0; padding: 20px;
+        }
+
+        .container {
+            max-width: 1000px; margin: 0 auto;
+            background: var(--card);
+            padding: 30px; border-radius: 15px;
+            border: 1px solid #333;
+        }
+
+        h1 { text-align: center; color: var(--primary); font-size: 2.5rem; text-shadow: 2px 2px #000; }
+
+        .selector-box {
+            background: #222; padding: 20px; border-radius: 10px;
+            display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 30px;
+        }
+
+        select, input {
+            width: 100%; padding: 12px; border-radius: 5px; background: #333; color: #fff; border: 1px solid var(--primary);
+        }
+
+        #resultArea { display: none; }
+
+        .dual-grid {
+            display: grid; grid-template-columns: 1fr 1fr; gap: 20px;
+        }
+
+        .sensi-column {
+            background: #1a1a1a; padding: 20px; border-radius: 10px; border-top: 5px solid #fff;
+        }
+
+        .low-border { border-color: var(--low); }
+        .high-border { border-color: var(--high); }
+
+        .type-title { text-align: center; text-transform: uppercase; margin-bottom: 20px; }
+        .low-text { color: var(--low); }
+        .high-text { color: var(--high); }
+
+        .sensi-item {
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 10px 0; border-bottom: 1px solid #222;
+        }
+
+        .sensi-item span { font-size: 0.9rem; font-family: sans-serif; color: #bbb; }
+        .sensi-val { font-size: 1.2rem; font-weight: bold; color: var(--primary); }
+
+        .btn-refresh {
+            grid-column: span 2; padding: 15px; margin-top: 20px;
+            background: var(--primary); color: #000; border: none;
+            border-radius: 5px; cursor: pointer; font-weight: bold; font-size: 1.1rem;
+        }
+
+        @media (max-width: 768px) { .selector-box, .dual-grid { grid-template-columns: 1fr; } }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>CALL OF DUTY MOBILE</h1>
+    <p style="text-align: center; color: #888;">GERADOR DE SENSIBILIDADE PROFISSIONAL</p>
+
+    <div class="selector-box">
+        <div>
+            <label>MARCA DO CELULAR</label>
+            <select id="brandSelect" onchange="startGenerator()">
+                <option value="">Selecione a marca...</option>
+            </select>
+        </div>
+        <div>
+            <label>MODELO</label>
+            <input type="text" id="modelInput" placeholder="Ex: S23 Ultra, Poco F5...">
+        </div>
+    </div>
+
+    <div id="resultArea">
+        <div class="dual-grid">
+            <div class="sensi-column low-border">
+                <h2 class="type-title low-text">PRECISÃO (BAIXA)</h2>
+                <div id="lowValues"></div>
+            </div>
+
+            <div class="sensi-column high-border">
+                <h2 class="type-title high-text">VELOCIDADE (ALTA)</h2>
+                <div id="highValues"></div>
+            </div>
+
+            <button class="btn-refresh" onclick="generateSensi()">🔄 GERAR NOVAS OPÇÕES</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    const marcas = ["Apple", "Samsung", "Xiaomi", "Motorola", "Realme", "Infinix", "ASUS", "Poco", "OnePlus", "Google", "Huawei", "Sony", "LG", "Lenovo", "Nubia", "Black Shark", "Honor", "Oppo", "Vivo", "ZTE"].sort();
+    const select = document.getElementById('brandSelect');
+    marcas.forEach(m => { let o = document.createElement('option'); o.value = m; o.text = m; select.appendChild(o); });
+
+    const configNames = [
+        { name: "Sensibilidade Padrão", key: "std" },
+        { name: "Mira de Ferro (ADS)", key: "ads" },
+        { name: "Mira Tática (Red Dot)", key: "tac" },
+        { name: "Mira de Sniper", key: "snipe" },
+        { name: "Mira Tática 3x", key: "3x" },
+        { name: "Disparo (ADS)", key: "f_ads" }
+    ];
+
+    function startGenerator() {
+        if(select.value !== "") {
+            document.getElementById('resultArea').style.display = "block";
+            generateSensi();
+        }
+    }
+
+    function getRandom(min, max) { return Math.floor(Math.random() * (max - min + 1) + min); }
+
+    function generateSensi() {
+        const lowCont = document.getElementById('lowValues');
+        const highCont = document.getElementById('highValues');
+        lowCont.innerHTML = ""; highCont.innerHTML = "";
+
+        configNames.forEach(item => {
+            // Lógica Pro: Sniper é sempre menor, Tática é sempre maior que ADS
+            let baseLow = item.key === 'snipe' ? getRandom(35, 50) : (item.key === 'std' ? getRandom(55, 75) : getRandom(65, 90));
+            let baseHigh = baseLow + getRandom(30, 60);
+
+            lowCont.innerHTML += `<div class="sensi-item"><span>${item.name}</span> <div class="sensi-val">${baseLow}</div></div>`;
+            highCont.innerHTML += `<div class="sensi-item"><span>${item.name}</span> <div class="sensi-val">${baseHigh}</div></div>`;
+        });
+    }
+</script>
+
+</body>
+  </html>
